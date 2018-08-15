@@ -33,9 +33,11 @@ module Vending
 
     def remove(item)
       validate_item!(item)
-      items[item.id].pop
+      items.fetch(item.id, nil) ? items[item.id].pop : nil
     ensure
-      if items && items.fetch(item.id, []).length == 0
+      if items && item &&
+          item.is_a?(ContainerItem) &&
+          items.fetch(item.id, []).length == 0
         items.delete(item.id)
       end
     end
