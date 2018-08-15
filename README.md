@@ -18,3 +18,14 @@ Design a vending machine using ruby. The vending machine should perform as follo
 4. If we can not return correct change then we will not vend the item & inform caller
 5. If caller cancels then current balance is returned - this will be using minimum number of coins available within the machine at that point in time.
 
+## Requisites
+
+- Ruby 2.5.1
+
+## Testing:
+
+1. git clone git@github.com:cshirley/vending-machine.git
+2. cd vending-machine
+3. gem install bundle
+4. bundle
+5. rspec
