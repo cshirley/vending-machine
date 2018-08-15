@@ -34,6 +34,10 @@ module Vending
     def remove(item)
       validate_item!(item)
       items[item.id].pop
+    ensure
+      if items && items.fetch(item.id, []).length == 0
+        items.delete(item.id)
+      end
     end
 
     def add_items(new_items)
