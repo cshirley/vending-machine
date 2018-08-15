@@ -2,9 +2,9 @@ require 'spec_helper'
 
 RSpec.describe Vending::Machine, type: :domain do
 
+  let(:clazz) { Vending::Machine }
   let(:valid_coin) { Vending::Coin.new(name: 'valid', value: 100) }
   let(:invalid_coin) { Vending::Coin.new(name: 'invalid', value: 101) }
-  let(:clazz) { Vending::Machine }
   let(:products) { mock_product_collection }
   let(:change) { mock_coin_collection }
   let(:subject_with_product) { clazz.new(denomination_units: Vending::DEFAULT_DENOMINATION_UNITS,
@@ -63,6 +63,7 @@ RSpec.describe Vending::Machine, type: :domain do
   end
 
   describe 'vend' do
+
     before {
       @subject = subject_with_product
       @product = @subject.products.first
@@ -72,12 +73,15 @@ RSpec.describe Vending::Machine, type: :domain do
       expect{@subject.vend_product('invalid_product')}.to raise_error Vending::ProductNotAvailableError
     end
 
-    it 'add correct amount and vend' do
-      @subject.insert_coin(Vending::Coin.new(name:100, value: 100))
-      @subject.insert_coin(Vending::Coin.new(name:1, value: 1))
-      result = @subject.vend_product(@product.id)
-      expect(result[:product].id).to eq @product.id
-      expect(result[:change].empty?).to be true
+    describe 'add correct amount and vend' do
+      before {
+        @subject.insert_coin(Vending::Coin.new(name:100, value: 100))
+        @subject.insert_coin(Vending::Coin.new(name:1, value: 1))
+        @result = @subject.vend_product(@product.id)
+      }
+
+      it { expect(@result[:product].id).to eq @product.id }
+      it { expect(@result[:change].empty?).to be true }
     end
 
     it 'raise error when not enough funds but vends when add sufficient funds' do
@@ -92,19 +96,21 @@ RSpec.describe Vending::Machine, type: :domain do
       expect(result[:change].empty?).to be true
     end
 
-    it 'add over amount and vend with change' do
-      expected_change = [50, 20, 20, 5, 2, 2]
-      @subject.load_coin(Vending::Coin.new(name:20, value: 20))
-      @subject.load_coin(Vending::Coin.new(name:2, value: 2))
+    describe 'add over amount and vend with change' do
+      before {
+        @expected_change = [50, 20, 20, 5, 2, 2]
+        @subject.load_coin(Vending::Coin.new(name:20, value: 20))
+        @subject.load_coin(Vending::Coin.new(name:2, value: 2))
 
-      @subject.insert_coin(Vending::Coin.new(name:100, value: 100))
-      @subject.insert_coin(Vending::Coin.new(name:100, value: 100))
+        @subject.insert_coin(Vending::Coin.new(name:100, value: 100))
+        @subject.insert_coin(Vending::Coin.new(name:100, value: 100))
 
-      result = @subject.vend_product(@product.id)
-      expect(result[:product].id).to eq @product.id
-      expect(result[:change].count).to eq expected_change.length
-      expect(result[:change].map(&:value).sum).to eq  99
-      expect(result[:change].map(&:value).sort.reverse).to eq expected_change
+        @result = @subject.vend_product(@product.id)
+      }
+      it { expect(@result[:product].id).to eq @product.id }
+      it { expect(@result[:change].count).to eq @expected_change.length }
+      it { expect(@result[:change].map(&:value).sum).to eq  99 }
+      it { expect(@result[:change].map(&:value).sort.reverse).to eq @expected_change }
     end
   end
 
