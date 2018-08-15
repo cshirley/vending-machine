@@ -41,12 +41,25 @@ RSpec.describe Vending::Machine, type: :domain do
   end
 
   describe 'eject coins' do
+
+    it 'returns nothing if customer balance is 0' do
+      expect(subject.eject_coins.length).to eq 0
+    end
+
     it 'returns correct value' do
       subject = subject_with_product
       subject.insert_coin(Vending::Coin.new(name:100, value: 100))
       subject.insert_coin(Vending::Coin.new(name:1, value: 1))
       expect(subject.eject_coins.map(&:value).sort.reverse).to eq [100, 1]
     end
+
+    it 'ejects coins after failed selection' do
+      subject = subject_with_product
+      subject.insert_coin(Vending::Coin.new(name:100, value: 100))
+      expect { subject.vend_product(subject.products.first.id) }.to raise_error Vending::InsufficientFundsError
+      expect(subject.eject_coins.map(&:value).sort.reverse).to eq [100]
+    end
+
   end
 
   describe 'vend' do
@@ -54,6 +67,10 @@ RSpec.describe Vending::Machine, type: :domain do
       @subject = subject_with_product
       @product = @subject.products.first
     }
+
+    it 'raise error when product not avaliable' do
+      expect{@subject.vend_product('invalid_product')}.to raise_error Vending::ProductNotAvailableError
+    end
 
     it 'add correct amount and vend' do
       @subject.insert_coin(Vending::Coin.new(name:100, value: 100))

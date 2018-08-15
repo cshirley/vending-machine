@@ -33,7 +33,7 @@ module Vending
     end
 
     def vend_product(product_name)
-      raise ProductNotAvailable.new  unless selected_product = @inventory[product_name]
+      raise ProductNotAvailableError.new  unless selected_product = @inventory[product_name]
       new_balance = (@customer_balance - selected_product.price)
       raise InsufficientFundsError.new  if new_balance < 0
       coins = new_balance == 0 ? [] : @coin_hopper.debit!(new_balance).remove_all
