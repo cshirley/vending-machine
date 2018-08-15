@@ -1,4 +1,4 @@
-#Vending Machine Test
+# Vending Machine Test
 
 ## Specification
 Design a vending machine using ruby. The vending machine should perform as follows:
