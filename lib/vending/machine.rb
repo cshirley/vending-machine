@@ -3,8 +3,8 @@ module Vending
 
     def initialize(denomination_units: nil, products: nil, change: nil)
       denomination_units ||= DEFAULT_DENOMINATION_UNITS
-      @coin_hopper = CoinContainer.new(denomination_units, change)
-      @inventory = Container.new(Product, products)
+      @coin_hopper = CoinContainer.new(denominations: denomination_units, coins: change)
+      @inventory = Container.new(item_type: Product, items: products)
       @customer_balance = 0
       self
     end

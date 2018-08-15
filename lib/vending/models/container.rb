@@ -1,7 +1,7 @@
 module Vending
   class Container
 
-    def initialize(item_type, items = nil)
+    def initialize(item_type:, items: nil)
       @items = {}
       @item_type = item_type
       (items || []).each { |item| add(item) }

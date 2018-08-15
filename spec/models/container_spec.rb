@@ -8,7 +8,7 @@ RSpec.describe Vending::Container, type: :model do
 
     def initialize(raise_error = false)
       @raise_error = raise_error
-      super(MockItem, [])
+      super(item_type: MockItem, items: [])
     end
 
     def validate(item)
@@ -18,7 +18,7 @@ RSpec.describe Vending::Container, type: :model do
   end
   let(:clazz) { Vending::Container}
   let(:items) { 10.times.inject([]) { |arr, i| arr << MockItem.new(id:i.to_s, name: "item #{i}")  } }
-  let(:subject) { clazz.new(MockItem, items) }
+  let(:subject) { clazz.new(item_type: MockItem, items: items) }
 
   describe 'initializes' do
     it 'with no params' do
@@ -26,11 +26,11 @@ RSpec.describe Vending::Container, type: :model do
     end
 
     it 'with valid items' do
-      expect{ clazz.new(MockItem, items.dup) }.not_to raise_error(Vending::InvalidItemError)
+      expect{ clazz.new(item_type: MockItem, items: items.dup) }.not_to raise_error(Vending::InvalidItemError)
     end
 
     it 'throws error with invalid type array'  do
-      expect{ clazz.new(MockItem, [Object.new]) }.to raise_error Vending::InvalidItemError
+      expect{ clazz.new(item_type: MockItem, items: [Object.new]) }.to raise_error Vending::InvalidItemError
     end
 
   end

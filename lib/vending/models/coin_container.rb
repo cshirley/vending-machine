@@ -3,9 +3,9 @@ module Vending
 
     attr_reader :valid_denominations
 
-    def initialize(denominations, coins=[])
+    def initialize(denominations:, coins:[])
       @valid_denominations = denominations
-      super(Coin, coins)
+      super(item_type: Coin, items: coins)
     end
 
     def debit!(amount)
@@ -29,7 +29,7 @@ module Vending
     private
 
     def debit_coins(amount)
-      change_collection = CoinContainer.new(self.valid_denominations)
+      change_collection = CoinContainer.new(denominations: self.valid_denominations)
       ids.map(&:to_i).sort.reverse.each do |denomination_key|
         while (change_collection.balance < amount ) &&
               (coin = self[denomination_key]) &&

@@ -4,7 +4,7 @@ RSpec.describe Vending::CoinContainer, type: :model do
   let(:coin_clazz) { Vending::Coin }
   let(:clazz) { Vending::CoinContainer}
   let(:deno_units) { Vending::DEFAULT_DENOMINATION_UNITS }
-  let(:subject) { clazz.new(deno_units) }
+  let(:subject) { clazz.new(denominations: deno_units) }
 
   describe 'initializes' do
     it 'Initialises with Zero Balance' do
@@ -12,7 +12,7 @@ RSpec.describe Vending::CoinContainer, type: :model do
     end
 
     it 'Initialises with a One Pound denomination' do
-      expect(clazz.new(deno_units, [coin_clazz.new(name: 100, value: 100)]).balance).to eq 100
+      expect(clazz.new(denominations: deno_units, coins: [coin_clazz.new(name: 100, value: 100)]).balance).to eq 100
     end
   end
 
