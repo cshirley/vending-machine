@@ -5,6 +5,7 @@ SimpleCov.start do
 end
 
 require_relative '../lib/vending/vending.rb'
+require_relative 'support/model_helpers.rb'
 
 RSpec.configure do |config|
   include ModelHelpers
