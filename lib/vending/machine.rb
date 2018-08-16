@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module Vending
   class Machine
-
     def initialize(denomination_units: nil, products: nil, change: nil)
       denomination_units ||= DEFAULT_DENOMINATION_UNITS
       @coin_hopper = CoinContainer.new(denominations: denomination_units, coins: change)
@@ -17,9 +18,7 @@ module Vending
       @coin_hopper.balance
     end
 
-    def customer_balance
-      @customer_balance
-    end
+    attr_reader :customer_balance
 
     def insert_coin(coin)
       @coin_hopper.add(coin)
@@ -33,13 +32,14 @@ module Vending
     end
 
     def vend_product(product_name)
-      raise ProductNotAvailableError.new  unless selected_product = @inventory[product_name]
+      selected_product = @inventory[product_name]
+      raise ProductNotAvailableError unless selected_product
       new_balance = (@customer_balance - selected_product.price)
-      raise InsufficientFundsError.new  if new_balance < 0
+      raise InsufficientFundsError if new_balance < 0
       coins = new_balance == 0 ? [] : @coin_hopper.debit!(new_balance).remove_all
       vended_product = @inventory.remove(selected_product)
       @customer_balance = 0
-      { product: vended_product, change: coins}
+      { product: vended_product, change: coins }
     end
 
     def load_product(product)

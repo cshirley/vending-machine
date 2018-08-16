@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'byebug'
 require_relative 'constants.rb'
 require_relative 'errors/errors.rb'

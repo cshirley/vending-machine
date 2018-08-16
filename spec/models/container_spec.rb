@@ -1,22 +1,21 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Vending::Container, type: :model do
-
   CLAZZ = Vending::Container
 
   class MockItem < Vending::ContainerItem; end
 
   class MockContainer < Vending::Container
-
     def initialize(raise_error = false)
       @raise_error = raise_error
       super(item_type: MockItem, items: [])
     end
 
-    def validate(item)
-      raise Vending::InvalidItemError.new if @raise_error
+    def validate(_item)
+      raise Vending::InvalidItemError if @raise_error
     end
-
   end
 
   def build_mock_item(id)
@@ -24,32 +23,30 @@ RSpec.describe Vending::Container, type: :model do
   end
 
   def build_mock_items
-    10.times.inject([]) { |arr, i| arr << build_mock_item(i)  }
+    10.times.inject([]) { |arr, i| arr << build_mock_item(i) }
   end
 
   let(:subject) { CLAZZ.new(item_type: MockItem, items: build_mock_items) }
 
   describe 'initializes' do
     it 'raise error with nil item_type' do
-      expect{CLAZZ.new(item_types:nil, items: nil)}.to raise_error ArgumentError
+      expect { CLAZZ.new(item_types: nil, items: nil) }.to raise_error ArgumentError
     end
 
     it 'raises error with no params' do
-      expect{CLAZZ.new}.to raise_error ArgumentError
+      expect { CLAZZ.new }.to raise_error ArgumentError
     end
 
     it 'with valid items' do
-      expect{ CLAZZ.new(item_type: MockItem, items: items.dup) }.not_to raise_error(Vending::InvalidItemError)
+      expect { CLAZZ.new(item_type: MockItem, items: items.dup) }.not_to raise_error(Vending::InvalidItemError)
     end
 
-    it 'throws error with invalid type array'  do
-      expect{ CLAZZ.new(item_type: MockItem, items: [Object.new]) }.to raise_error Vending::InvalidItemError
+    it 'throws error with invalid type array' do
+      expect { CLAZZ.new(item_type: MockItem, items: [Object.new]) }.to raise_error Vending::InvalidItemError
     end
-
   end
 
   context 'Mutable Operation' do
-
     it 'Raises Error when Add item with incorrect type' do
       expect { subject.add(Object.new) }.to raise_error Vending::InvalidItemError
     end
@@ -59,55 +56,53 @@ RSpec.describe Vending::Container, type: :model do
     end
 
     describe 'Add new unique item' do
-      before(:all) {
+      before(:all) do
         @item = build_mock_item(11)
         @subject = CLAZZ.new(item_type: MockItem, items: build_mock_items)
         @original_count = @subject.all.count
         @subject.add(@item.dup)
-      }
+      end
       it { expect(@subject[@item.id].name).to eq @item.name }
       it { expect(@subject.all.count).to eq @original_count + 1 }
       it { expect(@subject.find_all(@item.id).count).to eq 1 }
     end
 
     describe 'Add item with duplicate id' do
-
-      before(:all) {
+      before(:all) do
         @item = build_mock_item(1)
-        @subject = CLAZZ.new(item_type: MockItem, items:build_mock_items)
+        @subject = CLAZZ.new(item_type: MockItem, items: build_mock_items)
         @original_count = @subject.all.count
         @subject.add(@item.dup)
-      }
+      end
       it { expect(@subject[@item.id].name).to eq @item.name }
       it { expect(@subject.all.count).to eq @original_count + 1 }
       it { expect(@subject.find_all(@item.id).count).to eq 2 }
     end
 
     describe 'Remove existing item' do
-      before(:all) {
-        @subject = CLAZZ.new(item_type: MockItem, items:build_mock_items)
+      before(:all) do
+        @subject = CLAZZ.new(item_type: MockItem, items: build_mock_items)
         @item = @subject[1]
         @original_count = @subject.all.count
         @removed_item = @subject.remove(@item)
-      }
+      end
 
-      it { expect(@removed_item.id).to eq "1" }
+      it { expect(@removed_item.id).to eq '1' }
       it { expect(@subject[@removed_item.id]).to be nil }
       it { expect(@subject.all.count).to eq @original_count - 1 }
       it { expect(@subject.find_all(@removed_item.id).count).to eq 0 }
     end
 
     describe 'Remove missing item' do
-
-      before(:all) {
+      before(:all) do
         @item = build_mock_item(111)
-        @subject = CLAZZ.new(item_type: MockItem, items:build_mock_items)
+        @subject = CLAZZ.new(item_type: MockItem, items: build_mock_items)
         @original_count = @subject.all.count
         @removed_item = @subject.remove(@item)
-      }
+      end
 
       it { expect(@removed_item).to be nil }
-      it { expect(@subject.all.count).to eq @original_count  }
+      it { expect(@subject.all.count).to eq @original_count }
     end
 
     it 'Adds Many' do
@@ -151,12 +146,12 @@ RSpec.describe Vending::Container, type: :model do
   describe 'Delegator' do
     it 'customer validator raises error' do
       item = build_mock_item(1)
-      expect{MockContainer.new(true).add(item)}.to raise_error Vending::InvalidItemError
+      expect { MockContainer.new(true).add(item) }.to raise_error Vending::InvalidItemError
     end
 
     it 'customer validator not to raise error' do
       item = build_mock_item(1)
-      expect{MockContainer.new(false).add(item)}.not_to raise_error Vending::InvalidItemError
+      expect { MockContainer.new(false).add(item) }.not_to raise_error Vending::InvalidItemError
     end
   end
 end

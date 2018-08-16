@@ -1,5 +1,6 @@
-module ModelHelpers
+# frozen_string_literal: true
 
+module ModelHelpers
   def mock_coin_collection
     coins = []
     Vending::DEFAULT_DENOMINATION_UNITS.each do |denom|

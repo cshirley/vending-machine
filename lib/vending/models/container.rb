@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 module Vending
   class Container
-
     def initialize(item_type:, items: nil)
-      raise ArgumentError.new('item_type must not be nil') unless item_type
+      raise ArgumentError, 'item_type must not be nil' unless item_type
       @item_type = item_type
       @items = {}
       (items || []).each { |item| add(item) }
@@ -37,8 +38,8 @@ module Vending
       items.fetch(item.id, nil) ? items[item.id].pop : nil
     ensure
       if items && item &&
-          item.is_a?(ContainerItem) &&
-          items.fetch(item.id, []).length == 0
+         item.is_a?(ContainerItem) &&
+         items.fetch(item.id, []).empty?
         items.delete(item.id)
       end
     end
@@ -49,13 +50,13 @@ module Vending
     end
 
     def remove_all
-      removed_items = self.all
+      removed_items = all
       @items = {}
       removed_items
     end
 
     def key_item_count
-      items.inject({}) { |h, kv| h[kv.first] = kv.last.length; h; }
+      items.each_with_object({}) { |kv, h| h[kv.first] = kv.last.length; h; }
     end
 
     private
@@ -63,8 +64,8 @@ module Vending
     attr_accessor :items, :item_type, :valid_item_keys
 
     def validate_item!(item)
-      raise InvalidItemError.new("Invalid Type must be a #{item_type.name}") unless item && item.is_a?(ContainerItem)
-      raise InvalidItemError.new("Invalid Type must be a #{item_type.name}") unless item && item.is_a?(item_type)
+      raise InvalidItemError, "Invalid Type must be a #{item_type.name}" unless item&.is_a?(ContainerItem)
+      raise InvalidItemError, "Invalid Type must be a #{item_type.name}" unless item&.is_a?(item_type)
       validate_delegator(item)
     end
 
