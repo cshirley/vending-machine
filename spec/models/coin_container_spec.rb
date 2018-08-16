@@ -7,6 +7,17 @@ RSpec.describe Vending::CoinContainer, type: :model do
   let(:subject) { clazz.new(denominations: deno_units) }
 
   describe 'initializes' do
+    it 'raises error with nil denomination array' do
+      expect{ clazz.new(denominations: nil) }.to raise_error ArgumentError
+    end
+
+    it 'raises error with non array denomination' do
+      expect{ clazz.new(denominations: Object.new) }.to raise_error ArgumentError
+    end
+
+    it 'raises error with non Integer array denomination' do
+      expect{ clazz.new(denominations: [1, "aa"] ) }.to raise_error ArgumentError
+    end
     it 'Initialises with Zero Balance' do
       expect(subject.balance).to eq 0
     end

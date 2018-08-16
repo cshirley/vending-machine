@@ -4,6 +4,7 @@ module Vending
     attr_reader :valid_denominations
 
     def initialize(denominations:, coins:[])
+      validate_denominations(denominations)
       @valid_denominations = denominations
       super(item_type: Coin, items: coins)
     end
@@ -27,6 +28,16 @@ module Vending
     end
 
     private
+
+    def validate_denominations(data)
+      raise ArgumentError.new('denominations') unless data
+      raise ArgumentError.new('denominations') unless data.is_a?(Array)
+      data.each do |denom|
+        unless denom && denom.is_a?(Integer) && denom > 0
+          raise ArgumentError.new('denominations must be array of positive non zero integers')
+        end
+      end
+    end
 
     def debit_coins(amount)
       change_collection = CoinContainer.new(denominations: self.valid_denominations)

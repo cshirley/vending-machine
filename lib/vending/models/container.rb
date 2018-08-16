@@ -2,8 +2,9 @@ module Vending
   class Container
 
     def initialize(item_type:, items: nil)
-      @items = {}
+      raise ArgumentError.new('item_type must not be nil') unless item_type
       @item_type = item_type
+      @items = {}
       (items || []).each { |item| add(item) }
       self
     end

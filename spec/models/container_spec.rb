@@ -30,7 +30,11 @@ RSpec.describe Vending::Container, type: :model do
   let(:subject) { CLAZZ.new(item_type: MockItem, items: build_mock_items) }
 
   describe 'initializes' do
-    it 'with no params' do
+    it 'raise error with nil item_type' do
+      expect{CLAZZ.new(item_types:nil, items: nil)}.to raise_error ArgumentError
+    end
+
+    it 'raises error with no params' do
       expect{CLAZZ.new}.to raise_error ArgumentError
     end
 
